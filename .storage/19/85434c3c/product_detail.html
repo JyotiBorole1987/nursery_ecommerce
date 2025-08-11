@@ -1,0 +1,122 @@
+{% extends 'base/base.html' %}
+
+{% block extra_css %}
+<style>
+    .product-image {
+        height: 400px;
+        object-fit: contain;
+        background-color: #f8f9fa;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'store-home' %}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'product-list' %}">Products</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'category-products' product.category.slug %}">{{ product.category.name }}</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ product.name }}</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <!-- Product Image -->
+        <div class="col-md-6 mb-4">
+            <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid rounded product-image w-100">
+        </div>
+
+        <!-- Product Details -->
+        <div class="col-md-6">
+            <h2 class="mb-3">{{ product.name }}</h2>
+            
+            <p class="h4 text-success mb-3">${{ product.price }}</p>
+            
+            <div class="mb-3">
+                {% if product.available and product.stock > 0 %}
+                    <span class="badge badge-success">In Stock</span>
+                    <span class="text-muted ml-2">{{ product.stock }} available</span>
+                {% else %}
+                    <span class="badge badge-danger">Out of Stock</span>
+                {% endif %}
+            </div>
+            
+            <p class="mb-4">{{ product.description }}</p>
+            
+            <div class="d-flex mb-4">
+                {% if product.available and product.stock > 0 %}
+                <form action="{% url 'add-to-cart' product.id %}" method="POST" class="mr-2">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-success btn-lg">
+                        <i class="fas fa-cart-plus mr-1"></i> Add to Cart
+                    </button>
+                </form>
+                {% else %}
+                <button class="btn btn-secondary btn-lg mr-2" disabled>
+                    <i class="fas fa-cart-plus mr-1"></i> Out of Stock
+                </button>
+                {% endif %}
+                
+                {% if user.is_authenticated %}
+                    {% if in_wishlist %}
+                    <form action="{% url 'remove-from-wishlist' product.id %}" method="POST">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-outline-danger btn-lg">
+                            <i class="fas fa-heart mr-1"></i> Remove from Wishlist
+                        </button>
+                    </form>
+                    {% else %}
+                    <form action="{% url 'add-to-wishlist' product.id %}" method="POST">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-outline-danger btn-lg">
+                            <i class="far fa-heart mr-1"></i> Add to Wishlist
+                        </button>
+                    </form>
+                    {% endif %}
+                {% endif %}
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Product Information</h5>
+                </div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">
+                        <strong>Category:</strong> {{ product.category.name }}
+                    </li>
+                    <li class="list-group-item">
+                        <strong>Added:</strong> {{ product.created_at|date:"F d, Y" }}
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Related Products -->
+    {% if related_products %}
+    <section class="mt-5">
+        <h3 class="mb-4">Related Products</h3>
+        <div class="row">
+            {% for related in related_products %}
+            <div class="col-md-3 mb-4">
+                <div class="card h-100">
+                    <img src="{{ related.image.url }}" class="card-img-top" alt="{{ related.name }}" 
+                         style="height: 150px; object-fit: cover;">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ related.name }}</h5>
+                        <p class="card-text text-success">${{ related.price }}</p>
+                    </div>
+                    <div class="card-footer bg-transparent">
+                        <a href="{% url 'product-detail' related.slug %}" class="btn btn-outline-success btn-block">
+                            View Details
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+</div>
+{% endblock %}

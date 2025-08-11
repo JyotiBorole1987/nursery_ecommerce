@@ -1,0 +1,91 @@
+{% extends 'base/base.html' %}
+
+{% block content %}
+<section class="jumbotron text-center" style="background: url('/static/images/banner.jpg') no-repeat center center; background-size: cover; color: white; text-shadow: 2px 2px 4px #000;">
+    <div class="container">
+        <h1 class="jumbotron-heading">Welcome to Green Oasis Nursery</h1>
+        <p class="lead">Your one-stop shop for beautiful plants and trees</p>
+        <p>
+            <a href="{% url 'product-list' %}" class="btn btn-success my-2">Browse Products</a>
+        </p>
+    </div>
+</section>
+
+<div class="container mt-5">
+    <!-- Featured Categories -->
+    <h2 class="text-center mb-4">Plant Categories</h2>
+    <div class="row mb-5">
+        {% for category in categories %}
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h5 class="card-title">{{ category.name }}</h5>
+                    <p class="card-text">{{ category.description|truncatechars:100 }}</p>
+                    <a href="{% url 'category-products' category.slug %}" class="btn btn-outline-success">Browse {{ category.name }}</a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info">No categories available at the moment.</div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Featured Products -->
+    <h2 class="text-center mb-4">Featured Products</h2>
+    <div class="row">
+        {% for product in featured_products %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}" style="height: 200px; object-fit: cover;">
+                <div class="card-body">
+                    <h5 class="card-title">{{ product.name }}</h5>
+                    <p class="card-text text-success font-weight-bold">${{ product.price }}</p>
+                    <p class="card-text">{{ product.description|truncatechars:100 }}</p>
+                </div>
+                <div class="card-footer bg-transparent d-flex justify-content-between">
+                    <a href="{% url 'product-detail' product.slug %}" class="btn btn-outline-success">View Details</a>
+                    <form action="{% url 'add-to-cart' product.id %}" method="POST" class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-success">Add to Cart</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info">No featured products available at the moment.</div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Benefits Section -->
+    <section class="my-5">
+        <h2 class="text-center mb-4">Why Choose Us</h2>
+        <div class="row">
+            <div class="col-md-4 text-center">
+                <div class="mb-3">
+                    <i class="fas fa-truck fa-3x text-success"></i>
+                </div>
+                <h5>Free Shipping</h5>
+                <p>Free shipping on all orders over $50</p>
+            </div>
+            <div class="col-md-4 text-center">
+                <div class="mb-3">
+                    <i class="fas fa-leaf fa-3x text-success"></i>
+                </div>
+                <h5>Fresh Plants</h5>
+                <p>We ensure all our plants are healthy and fresh</p>
+            </div>
+            <div class="col-md-4 text-center">
+                <div class="mb-3">
+                    <i class="fas fa-seedling fa-3x text-success"></i>
+                </div>
+                <h5>Expert Advice</h5>
+                <p>Get professional gardening advice from our experts</p>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}

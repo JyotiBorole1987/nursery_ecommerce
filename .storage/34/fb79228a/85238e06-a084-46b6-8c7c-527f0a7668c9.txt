@@ -1,0 +1,135 @@
+$ mkdir -p plant_nursery_ecommerce
+cd plant_nursery_ecommerce
+python -m venv venv
+source venv/bin/activate
+pip install django pillow django-crispy-forms stripe
+django-admin startproject plant_nursery .
+django-admin startapp store
+django-admin startapp users
+mkdir -p static/css static/js static/images
+mkdir -p media/products
+mkdir -p templates/store templates/users templates/base
+touch requirements.txt
+Collecting django
+  Downloading django-5.2.4-py3-none-any.whl (8.3 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 8.3/8.3 MB 67.4 MB/s eta 0:00:00
+Collecting pillow
+  Downloading pillow-11.3.0-cp310-cp310-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (6.6 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 6.6/6.6 MB 70.1 MB/s eta 0:00:00
+Collecting django-crispy-forms
+  Downloading django_crispy_forms-2.4-py3-none-any.whl (31 kB)
+Collecting stripe
+  Downloading stripe-12.4.0-py2.py3-none-any.whl (1.7 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.7/1.7 MB 42.0 MB/s eta 0:00:00
+Collecting sqlparse>=0.3.1
+  Downloading sqlparse-0.5.3-py3-none-any.whl (44 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 44.4/44.4 kB 2.1 MB/s eta 0:00:00
+Collecting asgiref>=3.8.1
+  Downloading asgiref-3.9.1-py3-none-any.whl (23 kB)
+Collecting requests>=2.20
+  Downloading requests-2.32.4-py3-none-any.whl (64 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 64.8/64.8 kB 3.9 MB/s eta 0:00:00
+Collecting typing_extensions>=4.5.0
+  Downloading typing_extensions-4.14.1-py3-none-any.whl (43 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 43.9/43.9 kB 2.3 MB/s eta 0:00:00
+Collecting urllib3<3,>=1.21.1
+  Downloading urllib3-2.5.0-py3-none-any.whl (129 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 129.8/129.8 kB 10.5 MB/s eta 0:00:00
+Collecting charset_normalizer<4,>=2
+  Downloading charset_normalizer-3.4.2-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (149 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 149.5/149.5 kB 7.3 MB/s eta 0:00:00
+Collecting certifi>=2017.4.17
+  Downloading certifi-2025.8.3-py3-none-any.whl (161 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 161.2/161.2 kB 7.5 MB/s eta 0:00:00
+Collecting idna<4,>=2.5
+  Downloading idna-3.10-py3-none-any.whl (70 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 70.4/70.4 kB 2.9 MB/s eta 0:00:00
+Installing collected packages: urllib3, typing_extensions, sqlparse, pillow, idna, charset_normalizer, certifi, requests, asgiref, stripe, django, django-crispy-forms
+Successfully installed asgiref certifi charset_normalizer django django-crispy-forms idna pillow requests sqlparse stripe typing_extensions urllib3
+
+[notice] A new release of pip available: 22.3.1 -> 25.2
+[notice] To update, run: pip install --upgrade pip
+$ cd plant_nursery_ecommerce
+mkdir -p media/products
+touch media/products/placeholder.jpg
+python manage.py makemigrations
+python manage.py migrate
+python manage.py check
+pip install crispy-bootstrap4
+
+bash: line 15: cd: plant_nursery_ecommerce: No such file or directory
+Traceback (most recent call last):
+  File "/workspace/plant_nursery_ecommerce/manage.py", line 22, in <module>
+    main()
+  File "/workspace/plant_nursery_ecommerce/manage.py", line 18, in main
+    execute_from_command_line(sys.argv)
+  File "/data/.cache/python/lib/python3.10/site-packages/django/core/management/__init__.py", line 442, in execute_from_command_line
+    utility.execute()
+  File "/data/.cache/python/lib/python3.10/site-packages/django/core/management/__init__.py", line 416, in execute
+    django.setup()
+  File "/data/.cache/python/lib/python3.10/site-packages/django/__init__.py", line 24, in setup
+    apps.populate(settings.INSTALLED_APPS)
+  File "/data/.cache/python/lib/python3.10/site-packages/django/apps/registry.py", line 91, in populate
+    app_config = AppConfig.create(entry)
+  File "/data/.cache/python/lib/python3.10/site-packages/django/apps/config.py", line 193, in create
+    import_module(entry)
+  File "/opt/conda/envs/mgx-chat/lib/python3.10/importlib/__init__.py", line 126, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+  File "<frozen importlib._bootstrap>", line 1050, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1027, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1004, in _find_and_load_unlocked
+ModuleNotFoundError: No module named 'crispy_bootstrap4'
+Traceback (most recent call last):
+  File "/workspace/plant_nursery_ecommerce/manage.py", line 22, in <module>
+    main()
+  File "/workspace/plant_nursery_ecommerce/manage.py", line 18, in main
+    execute_from_command_line(sys.argv)
+  File "/data/.cache/python/lib/python3.10/site-packages/django/core/management/__init__.py", line 442, in execute_from_command_line
+    utility.execute()
+  File "/data/.cache/python/lib/python3.10/site-packages/django/core/management/__init__.py", line 416, in execute
+    django.setup()
+  File "/data/.cache/python/lib/python3.10/site-packages/django/__init__.py", line 24, in setup
+    apps.populate(settings.INSTALLED_APPS)
+  File "/data/.cache/python/lib/python3.10/site-packages/django/apps/registry.py", line 91, in populate
+    app_config = AppConfig.create(entry)
+  File "/data/.cache/python/lib/python3.10/site-packages/django/apps/config.py", line 193, in create
+    import_module(entry)
+  File "/opt/conda/envs/mgx-chat/lib/python3.10/importlib/__init__.py", line 126, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+  File "<frozen importlib._bootstrap>", line 1050, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1027, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1004, in _find_and_load_unlocked
+ModuleNotFoundError: No module named 'crispy_bootstrap4'
+Traceback (most recent call last):
+  File "/workspace/plant_nursery_ecommerce/manage.py", line 22, in <module>
+    main()
+  File "/workspace/plant_nursery_ecommerce/manage.py", line 18, in main
+    execute_from_command_line(sys.argv)
+  File "/data/.cache/python/lib/python3.10/site-packages/django/core/management/__init__.py", line 442, in execute_from_command_line
+    utility.execute()
+  File "/data/.cache/python/lib/python3.10/site-packages/django/core/management/__init__.py", line 416, in execute
+    django.setup()
+  File "/data/.cache/python/lib/python3.10/site-packages/django/__init__.py", line 24, in setup
+    apps.populate(settings.INSTALLED_APPS)
+  File "/data/.cache/python/lib/python3.10/site-packages/django/apps/registry.py", line 91, in populate
+    app_config = AppConfig.create(entry)
+  File "/data/.cache/python/lib/python3.10/site-packages/django/apps/config.py", line 193, in create
+    import_module(entry)
+  File "/opt/conda/envs/mgx-chat/lib/python3.10/importlib/__init__.py", line 126, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+  File "<frozen importlib._bootstrap>", line 1050, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1027, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1004, in _find_and_load_unlocked
+ModuleNotFoundError: No module named 'crispy_bootstrap4'
+Collecting crispy-bootstrap4
+  Downloading crispy_bootstrap4-2025.6-py3-none-any.whl (23 kB)
+Requirement already satisfied: django>=4.2 in /data/.cache/python/lib/python3.10/site-packages (from crispy-bootstrap4) (5.2.4)
+Requirement already satisfied: django-crispy-forms>=2.3 in /data/.cache/python/lib/python3.10/site-packages (from crispy-bootstrap4) (2.4)
+Requirement already satisfied: sqlparse>=0.3.1 in /data/.cache/python/lib/python3.10/site-packages (from django>=4.2->crispy-bootstrap4) (0.5.3)
+Requirement already satisfied: asgiref>=3.8.1 in /data/.cache/python/lib/python3.10/site-packages (from django>=4.2->crispy-bootstrap4) (3.9.1)
+Requirement already satisfied: typing_extensions>=4 in /data/.cache/python/lib/python3.10/site-packages (from asgiref>=3.8.1->django>=4.2->crispy-bootstrap4) (4.14.1)
+Installing collected packages: crispy-bootstrap4
+Successfully installed crispy-bootstrap4-2025.6
+
+[notice] A new release of pip available: 22.3.1 -> 25.2
+[notice] To update, run: pip install --upgrade pip

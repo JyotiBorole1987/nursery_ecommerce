@@ -1,0 +1,234 @@
+{% extends 'base/base.html' %}
+
+{% block extra_css %}
+<style>
+    .form-control:focus {
+        border-color: #28a745;
+        box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Checkout</h2>
+    
+    {% if cart_items %}
+    <div class="row mt-4">
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Shipping Information</h5>
+                </div>
+                <div class="card-body">
+                    <form id="shipping-form">
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="full_name">Full Name</label>
+                                <input type="text" class="form-control" id="full_name" name="full_name" value="{{ user.get_full_name }}" required>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="email">Email</label>
+                                <input type="email" class="form-control" id="email" name="email" value="{{ user.email }}" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="address">Address</label>
+                            <input type="text" class="form-control" id="address" name="address" value="{{ user.profile.address|default:'' }}" required>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="city">City</label>
+                                <input type="text" class="form-control" id="city" name="city" value="{{ user.profile.city|default:'' }}" required>
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label for="state">State</label>
+                                <input type="text" class="form-control" id="state" name="state" value="{{ user.profile.state|default:'' }}" required>
+                            </div>
+                            <div class="form-group col-md-2">
+                                <label for="zip_code">Zip</label>
+                                <input type="text" class="form-control" id="zip_code" name="zip_code" value="{{ user.profile.zip_code|default:'' }}" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">Phone</label>
+                            <input type="tel" class="form-control" id="phone" name="phone" value="{{ user.profile.phone_number|default:'' }}" required>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Payment Information</h5>
+                </div>
+                <div class="card-body">
+                    <form id="payment-form">
+                        <div id="card-element" class="form-control" style="height: 40px; padding-top: 10px;"></div>
+                        <div id="card-errors" class="text-danger mt-2"></div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Order Summary</h5>
+                </div>
+                <div class="card-body p-0">
+                    <ul class="list-group list-group-flush">
+                        {% for item in cart_items %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="font-weight-bold">{{ item.quantity }}x</span> {{ item.product.name }}
+                            </div>
+                            <span>${{ item.total_price }}</span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div class="card-footer">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Subtotal:</span>
+                        <span>${{ total }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Shipping:</span>
+                        <span>Free</span>
+                    </div>
+                    <hr>
+                    <div class="d-flex justify-content-between mb-3">
+                        <strong>Total:</strong>
+                        <strong>${{ total }}</strong>
+                    </div>
+                    <button id="submit-button" class="btn btn-success btn-block">
+                        Place Order
+                    </button>
+                    <a href="{% url 'cart' %}" class="btn btn-outline-secondary btn-block mt-2">
+                        Back to Cart
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="alert alert-info mt-3">
+        <p>Your shopping cart is empty.</p>
+        <a href="{% url 'product-list' %}" class="btn btn-success mt-2">
+            Browse Products
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+    // Create a Stripe client
+    const stripe = Stripe('{{ stripe_public_key }}');
+    const elements = stripe.elements();
+    
+    // Create an instance of the card Element
+    const cardElement = elements.create('card');
+    
+    // Add an instance of the card Element into the `card-element` div
+    cardElement.mount('#card-element');
+    
+    // Handle form submission
+    const form = document.getElementById('payment-form');
+    const submitButton = document.getElementById('submit-button');
+    const shippingForm = document.getElementById('shipping-form');
+    
+    submitButton.addEventListener('click', async (event) => {
+        event.preventDefault();
+        
+        submitButton.disabled = true;
+        submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+        
+        // Validate shipping form
+        const shippingFormData = new FormData(shippingForm);
+        const shippingData = {};
+        for (const [key, value] of shippingFormData.entries()) {
+            if (!value) {
+                document.getElementById('card-errors').textContent = 'Please fill in all shipping information fields.';
+                submitButton.disabled = false;
+                submitButton.innerHTML = 'Place Order';
+                return;
+            }
+            shippingData[key] = value;
+        }
+        
+        try {
+            // Create payment intent on the server
+            const response = await fetch('{% url "create-payment" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({})
+            });
+            
+            const paymentData = await response.json();
+            
+            if (paymentData.error) {
+                document.getElementById('card-errors').textContent = paymentData.error;
+                submitButton.disabled = false;
+                submitButton.innerHTML = 'Place Order';
+                return;
+            }
+            
+            // Confirm the payment
+            const { error, paymentIntent } = await stripe.confirmCardPayment(paymentData.clientSecret, {
+                payment_method: {
+                    card: cardElement
+                }
+            });
+            
+            if (error) {
+                document.getElementById('card-errors').textContent = error.message;
+                submitButton.disabled = false;
+                submitButton.innerHTML = 'Place Order';
+            } else if (paymentIntent.status === 'succeeded') {
+                // Create hidden form to submit shipping data and payment id
+                const hiddenForm = document.createElement('form');
+                hiddenForm.method = 'POST';
+                hiddenForm.action = '{% url "payment-success" %}';
+                
+                // Add shipping data
+                for (const key in shippingData) {
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = key;
+                    input.value = shippingData[key];
+                    hiddenForm.appendChild(input);
+                }
+                
+                // Add payment intent ID
+                const paymentInput = document.createElement('input');
+                paymentInput.type = 'hidden';
+                paymentInput.name = 'payment_intent_id';
+                paymentInput.value = paymentIntent.id;
+                hiddenForm.appendChild(paymentInput);
+                
+                // Add CSRF token
+                const csrfInput = document.createElement('input');
+                csrfInput.type = 'hidden';
+                csrfInput.name = 'csrfmiddlewaretoken';
+                csrfInput.value = '{{ csrf_token }}';
+                hiddenForm.appendChild(csrfInput);
+                
+                // Submit the form
+                document.body.appendChild(hiddenForm);
+                hiddenForm.submit();
+            }
+        } catch (error) {
+            document.getElementById('card-errors').textContent = 'An error occurred. Please try again.';
+            submitButton.disabled = false;
+            submitButton.innerHTML = 'Place Order';
+        }
+    });
+</script>
+{% endblock %}

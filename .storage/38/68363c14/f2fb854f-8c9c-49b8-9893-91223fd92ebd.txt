@@ -1,0 +1,4 @@
+$ ps aux | grep runserver
+root      1163  0.1  0.0  43548 38020 ?        S    23:02   0:00 python manage.py runserver
+root      1164  6.8  0.0 153992 87472 ?        Sl   23:02   0:21 /workspace/plant_nursery_ecommerce/venv/bin/python manage.py runserver
+root      1490  0.0  0.0   3840  2068 ?        S    23:07   0:00 grep runserver
